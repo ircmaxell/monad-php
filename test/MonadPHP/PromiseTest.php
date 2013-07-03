@@ -4,8 +4,33 @@ namespace MonadPHP;
 
 class PromiseTest extends \PHPUnit_Framework_TestCase {
 
-    public function testBind() {
-        $promise = new Promise;
+    public function testFail() {
+        $promise = new Deferred;
+        $calledSuccess = false;
+        $calledFailure = false;
+        $promise->when(function() use (&$calledSuccess) {
+            $calledSuccess = true;
+        }, function() use (&$calledFailure) {
+            $calledFailure = true;
+        });
+        $this->assertFalse($calledSuccess);
+        $this->assertFalse($calledFailure);
+
+        $promise->fail(true);
+        $this->assertFalse($calledSuccess, 'Not successful');
+        $this->assertTrue($calledFailure, 'Failed!');
+
+        try {
+            $promise->succeed(true);
+            $this->fail('No exception raised');
+        } catch (\BadMethodCallException $e) {
+            $this->assertFalse($calledSuccess);
+        }
+    }
+
+
+    public function testSucceed() {
+        $promise = new Deferred;
         $calledSuccess = false;
         $calledFailure = false;
         $promise->when(function() use (&$calledSuccess) {
@@ -17,15 +42,30 @@ class PromiseTest extends \PHPUnit_Framework_TestCase {
         $this->assertFalse($calledFailure);
 
         $promise->succeed(true);
-        $this->assertTrue($calledSuccess);
-        $this->assertFalse($calledFailure);
+        $this->assertTrue($calledSuccess, 'Success was not called');
+        $this->assertFalse($calledFailure, 'Fail was called');
 
         try {
             $promise->fail(true);
             $this->fail('No exception raised');
         } catch (\BadMethodCallException $e) {
-            $this->assertFalse($calledFailure);
+            $this->assertFalse($calledFailure, 'Fail is true!');
         }
+    }
+
+    public function testAlreadyResolvedPromise() {
+        $promise = new Deferred();
+        $promise->succeed(true);
+        $calledSuccess = false;
+        $calledFailure = false;
+        $promise->when(function() use (&$calledSuccess) {
+            $calledSuccess = true;
+        }, function() use (&$calledFailure) {
+            $calledFailure = true;
+        });
+        $this->assertTrue($calledSuccess);
+        $this->assertFalse($calledFailure);
+       
     }
 
 }

@@ -17,29 +17,17 @@ class Promise extends Monad {
     }
 
     public function unit($success = null, $failure = null) {
-        return new static($success, $failure); 
+        return new Promise($success, $failure); 
     }
 
     public function bind($success, $failure) {
         $obj = $this->unit($success, $failure);
         if ($this->isResolved) {
-            if ($this->succeed) {
-                $obj->succeed($this->value);
-            } else {
-                $obj->fail($this->value);
-            }
+            $obj->resolve($this->succeed, $this->value);
         } else {
             $this->children[] = $obj;
         }
         return $obj;
-    }
-
-    public function succeed($value) {
-        $this->resolve(true, $value);
-    }
-
-    public function fail($value) {
-        $this->resolve(false, $value);
     }
 
     protected function resolve($status, $value) {
@@ -53,9 +41,8 @@ class Promise extends Monad {
         if ($callback) {
             call_user_func($callback, $value);
         }
-        $method = $status ? 'succeed' : 'fail';
         foreach ($this->children as $child) {
-            $child->$method($value);
+            $child->resolve($status, $value);
         }
     }
 
