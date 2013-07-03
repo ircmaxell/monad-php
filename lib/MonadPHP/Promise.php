@@ -39,10 +39,10 @@ class Promise extends Monad {
         $this->succeed = $status;
         $callback = $status ? $this->success : $this->failure;
         if ($callback) {
-            call_user_func($callback, $value);
+            $this->value = call_user_func($callback, $value);
         }
         foreach ($this->children as $child) {
-            $child->resolve($status, $value);
+            $child->resolve($status, $this->value);
         }
     }
 

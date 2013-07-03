@@ -68,4 +68,17 @@ class PromiseTest extends \PHPUnit_Framework_TestCase {
        
     }
 
+    public function testPromiseValues() {
+        $promise = new Deferred();
+        $receivedValue = null;
+        $promise->when(function($a) {
+            return $a + 1;
+        })->when(function($b) use (&$receivedValue) {
+            $receivedValue = $b;
+        });
+        $this->assertEquals(null, $receivedValue);
+        $promise->succeed(2);
+        $this->assertEquals(3, $receivedValue);
+    }
+
 }
