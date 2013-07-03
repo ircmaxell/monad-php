@@ -2,7 +2,7 @@
 
 namespace MonadPHP;
 
-abstract class Monad {
+class Monad {
 
     protected $value;
 
@@ -10,24 +10,30 @@ abstract class Monad {
         $this->value = $value;
     }
 
-    public function __get($name) {
-        $name = strtolower($name);
-        if (method_exists($this, $name)) {
-            $cb = array($this, $name);
-            return function() use ($cb) {
-                return call_user_func_array($cb, func_get_args());
-            };
-        }
-        return null;
-    }
-
     public function unit($value) {
+        if ($value instanceof $this) {
+            return $value;
+        }
         $class = get_class($this);
         return new $class($value);
     }
 
     public function bind($function, array $args = array()) {
-        array_unshift($args, $this->value);
+        return $this->unit($this->runCallback($function, $this->value, $args));
+    }
+
+    public function extract() {
+        if ($this->value instanceof self) {
+            return $this->value->extract();
+        }
+        return $this->value;
+    }
+
+    protected function runCallback($function, $value, array $args = array()) {
+        if ($value instanceof self) {
+            return $value->bind($function, $args);
+        }
+        array_unshift($args, $value);
         return call_user_func_array($function, $args);
     }
 

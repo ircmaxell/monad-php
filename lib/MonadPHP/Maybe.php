@@ -8,7 +8,7 @@ class Maybe extends Monad {
         if (!is_null($this->value)) {
             return parent::bind($function);
         }
-        return null;
+        return $this->unit(null);
     }
 
 }

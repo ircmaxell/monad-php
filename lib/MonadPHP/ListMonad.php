@@ -4,15 +4,31 @@ namespace MonadPHP;
 
 class ListMonad extends Monad {
 
-    public function unit($value) {
+    public function __construct($value) {
         if (!is_array($value) && !$value instanceof \Traversible) {
             throw new \InvalidArgumentException('Must be traversible');
         }
-        return parent::unit($value);
+        return parent::__construct($value);
     }
 
-    public function bind($function){
-        return $this->unit(array_map($function, $this->value));
+    public function bind($function, array $args = array()) {
+        $result = array();
+        foreach ($this->value as $value) {
+            $result[] = $this->runCallback($function, $value, $args);
+        }
+        return $this->unit($result);
+    }
+
+    public function extract() {
+        $ret = array();
+        foreach ($this->value as $value) {
+            if ($value instanceof Monad) {
+                $ret[] = $value->extract();
+            } else {
+                $ret[] = $value;
+            }
+        }
+        return $ret;
     }
 
 }
