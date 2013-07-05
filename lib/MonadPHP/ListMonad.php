@@ -16,7 +16,7 @@ class ListMonad extends Monad {
         foreach ($this->value as $value) {
             $result[] = $this->runCallback($function, $value, $args);
         }
-        return $this->unit($result);
+        return $this::unit($result);
     }
 
     public function extract() {

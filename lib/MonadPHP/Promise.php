@@ -16,7 +16,7 @@ class Promise extends Monad {
         $this->failure = $failure;
     }
 
-    public function unit($success = null, $failure = null) {
+    public static function unit($success = null, $failure = null) {
         return new Promise($success, $failure); 
     }
 
