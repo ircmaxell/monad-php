@@ -11,7 +11,7 @@ class IdentityTest extends \PHPUnit_Framework_TestCase {
 
     public function testBindUnit() {
         $monad = new Identity(1);
-        $this->assertEquals($monad, $monad->bind(function($value) use ($monad) { return $monad->unit($value); }));
+        $this->assertEquals($monad, $monad->bind($monad::unit));
     }
 
     public function testExtract() {

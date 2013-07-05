@@ -95,4 +95,7 @@ Or, what if you want to deal with multi-dimensional arrays?
     var_dump($doubled->extract());
     // Prints array(array(2, 4), array(6, 8), array(10, 12))
 
+There also exist helper constants on each of the monads to get a callback to the `unit` method:
 
+    $newMonad = $monad->bind(Maybe::unit);
+    // Does the same thing as above 

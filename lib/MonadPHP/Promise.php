@@ -4,6 +4,8 @@ namespace MonadPHP;
 
 class Promise extends Monad {
 
+    const unit = "MonadPHP\Promise::unit";
+
     protected $isResolved = false;
     protected $succeed = null;
 
