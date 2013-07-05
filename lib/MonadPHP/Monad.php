@@ -2,7 +2,7 @@
 
 namespace MonadPHP;
 
-class Monad {
+abstract class Monad {
 
     protected $value;
 
