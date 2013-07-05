@@ -5,8 +5,8 @@ namespace MonadPHP;
 class ListMonad extends Monad {
 
     public function __construct($value) {
-        if (!is_array($value) && !$value instanceof \Traversible) {
-            throw new \InvalidArgumentException('Must be traversible');
+        if (!is_array($value) && !$value instanceof \Traversable) {
+            throw new \InvalidArgumentException('Must be traversable');
         }
         return parent::__construct($value);
     }
