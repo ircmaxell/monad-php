@@ -99,3 +99,36 @@ There also exist helper constants on each of the monads to get a callback to the
 
     $newMonad = $monad->bind(Maybe::unit);
     // Does the same thing as above 
+
+Real World Example
+==================
+
+Imagine that you want to traverse a multi-dimensional array to create a list of values of a particular sub-key. For example:
+
+    $posts = array(
+        array("title" => "foo", "author" => array("name" => "Bob", "email" => "bob@example.com")),
+        array("title" => "bar", "author" => array("name" => "Tom", "email" => "tom@example.com")),
+        array("title" => "baz"),
+        array("title" => "biz", "author" => array("name" => "Mark", "email" => "mark@example.com")),
+    );
+    
+What if we wanted to extract all author names from this data set. In traditional procedural programming, you'd likely have a number of loops and conditionals. With monads, it becomes quite simple.
+
+First, we define a function to return a particular index of an array:
+
+    function index($key) {
+        return function($array) {
+            return isset($array[$key]) ? $array[$key] : null;
+        };
+    }
+    
+Basically, this just creates a callback which will return a particular array key if it exists. With this, we have everything we need to get the list of authors.
+
+    $postMonad = new MonadPHP\ListMonad($posts);
+    $names = $postMonad
+        ->bind(MonadPHP\Maybe::unit)
+        ->bind(index("author"))
+        ->bind(index("name"))
+        ->extract();
+        
+Follow through and see what happens!
