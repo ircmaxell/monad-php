@@ -117,7 +117,7 @@ What if we wanted to extract all author names from this data set. In traditional
 First, we define a function to return a particular index of an array:
 
     function index($key) {
-        return function($array) {
+        return function($array) use ($key) {
             return isset($array[$key]) ? $array[$key] : null;
         };
     }
